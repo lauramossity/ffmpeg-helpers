@@ -1,0 +1,153 @@
+{
+"description": "VirtualDub external encoder profile collection",
+"externalEncoders": {
+  "sets": {
+  "mov ff x264 r18+pcm": {
+  "videoEncoder": "V ff 264 r18",
+  "audioEncoder": "A ff pcm",
+  "multiplexer": "M ff mov",
+  "description": "mov",
+  "extension": "mov",
+  "processPartial": true,
+  "useOutputAsTemp": false
+  },
+  "mp4 ff mpeg4 q1+ac3": {
+  "videoEncoder": "V ff mpeg4 q1",
+  "audioEncoder": "A ff ac3 192k",
+  "multiplexer": "M ff mov",
+  "description": "mp4",
+  "extension": "mp4",
+  "processPartial": true,
+  "useOutputAsTemp": false
+  },
+  "mov ff mjpeg+pcm": {
+  "videoEncoder": "V ff mjpeg q1",
+  "audioEncoder": "A ff pcm",
+  "multiplexer": "M ff mov",
+  "description": "mov",
+  "extension": "mov",
+  "processPartial": true,
+  "useOutputAsTemp": false
+  }
+  },
+  "profiles": {
+  "M ff mov": {
+  "name": "M ff mov",
+  "program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+  "commandArguments": "-i \"%(tempvideofile)\" -i \"%(tempaudiofile)\"  -c:v copy -c:a copy -r %(fps) -f mov \"%(outputname)\"",
+  "outputFilename": "%(outputname).audio",
+  "type": 2,
+  "inputFormat": 0,
+  "checkReturnCode": true,
+  "logStdout": true,
+  "logStderr": true,
+  "bypassCompression": false,
+  "predeleteOutputFile": true
+  },
+  "V ff 264 r18": {
+  "name": "V ff 264 r18",
+  "program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+  "commandArguments": "-f rawvideo -s %(width)x%(height) -r %(fps) -i - -vcodec libx264 -pix_fmt yuv420p -crf 18 -preset veryfast -x264opts colormatrix=bt709:vbv-maxrate=62500:vbv-bufsize=78125  \"%(tempvideofile)\"",
+  "outputFilename": "video.mov",
+  "type": 0,
+  "inputFormat": 0,
+  "checkReturnCode": true,
+  "logStdout": true,
+  "logStderr": true,
+  "bypassCompression": false,
+  "predeleteOutputFile": true
+  },
+  "V ff 264 r22": {
+  "name": "V ff 264 r22",
+  "program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+  "commandArguments": "-f rawvideo -s %(width)x%(height) -r %(fps) -i - -vcodec libx264 -pix_fmt yuv420p -crf 22 -preset medium -x264opts colormatrix=bt709:vbv-maxrate=62500:vbv-bufsize=78125  \"%(tempvideofile)\"",
+  "outputFilename": "video.mov",
+  "type": 0,
+  "inputFormat": 0,
+  "checkReturnCode": true,
+  "logStdout": true,
+  "logStderr": true,
+  "bypassCompression": false,
+  "predeleteOutputFile": true
+  },
+  "A ff pcm": {
+  "name": "A ff pcm",
+  "program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+  "commandArguments": "-i - -vn -c:a pcm_s16le -f wav \"%(tempaudiofile)\"",
+  "outputFilename": "%(outputname).wav",
+  "type": 1,
+  "inputFormat": 1,
+  "checkReturnCode": true,
+  "logStdout": true,
+  "logStderr": true,
+  "bypassCompression": true,
+  "predeleteOutputFile": true
+  },
+  "V ff mpeg4 q1": {
+  "name": "V ff mpeg4 q1",
+  "program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+  "commandArguments": "-f rawvideo -s %(width)x%(height) -r %(fps) -i - -c:v mpeg4 -q:v 1 -pix_fmt yuv420p  \"%(tempvideofile)\"",
+  "outputFilename": "video.mp4",
+  "type": 0,
+  "inputFormat": 0,
+  "checkReturnCode": true,
+  "logStdout": true,
+  "logStderr": true,
+  "bypassCompression": false,
+  "predeleteOutputFile": true
+  },
+  "M ff mp4": {
+  "name": "M ff mp4",
+  "program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+  "commandArguments": "-i \"%(tempvideofile)\" -i \"%(tempaudiofile)\"  -c:v copy -c:a copy -r %(fps) -f mp4 \"%(outputname)\"",
+  "outputFilename": "%(outputname).audio",
+  "type": 2,
+  "inputFormat": 0,
+  "checkReturnCode": true,
+  "logStdout": true,
+  "logStderr": false,
+  "bypassCompression": false,
+  "predeleteOutputFile": false
+  },
+  "M ff avi": {
+  "name": "M ff avi",
+  "program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+  "commandArguments": "-i \"%(tempvideofile)\" -i \"%(tempaudiofile)\"  -c:v copy -c:a copy -r %(fps) -f avi \"%(outputname)\"",
+  "outputFilename": "%(outputname).audio",
+  "type": 2,
+  "inputFormat": 0,
+  "checkReturnCode": true,
+  "logStdout": true,
+  "logStderr": true,
+  "bypassCompression": false,
+  "predeleteOutputFile": true
+  },
+  "A ff ac3 192k": {
+  "name": "A ff ac3 192k",
+  "program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+  "commandArguments": "-i - -vn  -f ac3 -acodec ac3 -b:a 192k -ar 48000 -ac 2 \"%(tempaudiofile)\"",
+  "outputFilename": "%(outputname).ac3",
+  "type": 1,
+  "inputFormat": 1,
+  "checkReturnCode": true,
+  "logStdout": true,
+  "logStderr": true,
+  "bypassCompression": true,
+  "predeleteOutputFile": true
+  },
+  "V ff mjpeg q1": {
+  "name": "V ff mjpeg q1",
+  "program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+  "commandArguments": "-f rawvideo -s %(width)x%(height) -r %(fps) -i - -c:v mjpeg -q:v 1 -pix_fmt yuv420p  \"%(tempvideofile)\"",
+  "outputFilename": "%(outputname).mp4",
+  "type": 0,
+  "inputFormat": 0,
+  "checkReturnCode": true,
+  "logStdout": true,
+  "logStderr": true,
+  "bypassCompression": false,
+  "predeleteOutputFile": true
+  }
+  }
+}
+}

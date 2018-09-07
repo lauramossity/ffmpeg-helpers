@@ -1,0 +1,194 @@
+{
+	"description": "VirtualDub external encoder profile collection",
+	"externalEncoders": {
+		"sets": {
+			"mp4ff 264+aac crop bwdif": {
+				"videoEncoder": "L V ff 264 crop bwdif",
+				"audioEncoder": "L A ff aac 48000",
+				"multiplexer": "L M ff mp4",
+				"description": "mp4",
+				"extension": "mp4",
+				"processPartial": true,
+				"useOutputAsTemp": false
+			},
+			"mp4 ff 264+aac crop yadif": {
+				"videoEncoder": "L V ff 264 crop yadif",
+				"audioEncoder": "L A ff aac 48000",
+				"multiplexer": "L M ff mp4",
+				"description": "mp4",
+				"extension": "mp4",
+				"processPartial": true,
+				"useOutputAsTemp": false
+			},
+			"mp4 ff 206+aac crop bwdif60": {
+				"videoEncoder": "L V ff 264 crop bwdif60",
+				"audioEncoder": "L A ff aac 48000",
+				"multiplexer": "L M ff mp4",
+				"description": "mp4",
+				"extension": "mp4",
+				"processPartial": true,
+				"useOutputAsTemp": false
+			},
+			"mp4 ff 264+aac crop yadif60": {
+				"videoEncoder": "L V ff 264 crop yadif60",
+				"audioEncoder": "L A ff aac 48000",
+				"multiplexer": "L M ff mp4",
+				"description": "mp4",
+				"extension": "mp4",
+				"processPartial": true,
+				"useOutputAsTemp": false
+			},
+			"Encoder Set 5": {
+				"videoEncoder": "Encoder Profile 9",
+				"audioEncoder": "L A ff aac 48000",
+				"multiplexer": "L M ff mp4",
+				"description": "mp4",
+				"extension": "mp4",
+				"processPartial": true,
+				"useOutputAsTemp": false
+			}
+		},
+		"profiles": {
+			"L M ff mp4": {
+				"name": "L M ff mp4",
+				"program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+				"commandArguments": "-i \"%(tempvideofile)\" -i \"%(tempaudiofile)\"  -c:v copy -c:a copy -r %(fps) -f mp4 \"%(outputname)\"",
+				"outputFilename": "%(outputname).audio",
+				"type": 2,
+				"pixelFormat": "",
+				"inputFormat": 0,
+				"checkReturnCode": true,
+				"logStdout": true,
+				"logStderr": true,
+				"bypassCompression": false,
+				"predeleteOutputFile": true
+			},
+			"L A ff aac 48000": {
+				"name": "L A ff aac 48000",
+				"program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+				"commandArguments": "-i - -c:a aac -b:a 192k -ar 48000 \"%(tempaudiofile)\"",
+				"outputFilename": "%(outputname).aac",
+				"type": 1,
+				"pixelFormat": "",
+				"inputFormat": 1,
+				"checkReturnCode": true,
+				"logStdout": true,
+				"logStderr": true,
+				"bypassCompression": true,
+				"predeleteOutputFile": true
+			},
+			"L V ff 264 crop yadif": {
+				"name": "L V ff 264 crop yadif",
+				"program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+				"commandArguments": "-f rawvideo -s %(width)x%(height) -r %(fps) -i - -vcodec libx264 -pix_fmt yuv420p -crf 22 -preset medium -x264opts colormatrix=bt709:vbv-maxrate=62500:vbv-bufsize=78125 -vf \"yadif=0:-1, hqdn3d=3, crop=632:472:8:0, pad=640:480:4:4:0x000000, scale=640:480\"  \"%(tempvideofile)\"",
+				"outputFilename": "video.mov",
+				"type": 0,
+				"pixelFormat": "",
+				"inputFormat": 0,
+				"checkReturnCode": true,
+				"logStdout": true,
+				"logStderr": true,
+				"bypassCompression": false,
+				"predeleteOutputFile": true
+			},
+			"M ff mp4": {
+				"name": "M ff mp4",
+				"program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+				"commandArguments": "-i \"%(tempvideofile)\" -i \"%(tempaudiofile)\"  -c:v copy -c:a copy -r %(fps) -f mp4 \"%(outputname)\"",
+				"outputFilename": "%(outputname).audio",
+				"type": 2,
+				"pixelFormat": "",
+				"inputFormat": 0,
+				"checkReturnCode": true,
+				"logStdout": true,
+				"logStderr": true,
+				"bypassCompression": false,
+				"predeleteOutputFile": true
+			},
+			"M ff auto": {
+				"name": "M ff auto",
+				"program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+				"commandArguments": "-i \"%(tempvideofile)\" -i \"%(tempaudiofile)\"  -c:v copy -c:a copy -r %(fps) \"%(outputname)\"",
+				"outputFilename": "%(outputname).audio",
+				"type": 2,
+				"pixelFormat": "",
+				"inputFormat": 0,
+				"checkReturnCode": true,
+				"logStdout": true,
+				"logStderr": true,
+				"bypassCompression": false,
+				"predeleteOutputFile": true
+			},
+			"L V ff 264 crop bwdif": {
+				"name": "L V ff 264 crop bwdif",
+				"program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+				"commandArguments": "-f rawvideo -s %(width)x%(height) -r %(fps) -i - -vcodec libx264 -pix_fmt yuv420p -crf 22 -preset medium -x264opts colormatrix=bt709:vbv-maxrate=62500:vbv-bufsize=78125 -vf \"bwdif=0:-1, hqdn3d=3, crop=632:472:8:0, pad=640:480:4:4:0x000000, scale=640:480\"  \"%(tempvideofile)\"",
+				"outputFilename": "video.mov",
+				"type": 0,
+				"pixelFormat": "",
+				"inputFormat": 0,
+				"checkReturnCode": true,
+				"logStdout": true,
+				"logStderr": true,
+				"bypassCompression": false,
+				"predeleteOutputFile": true
+			},
+			"L V ff 264 crop bwdif60": {
+				"name": "L V ff 264 crop bwdif60",
+				"program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+				"commandArguments": "-f rawvideo -s %(width)x%(height) -r %(fps) -i - -vcodec libx264 -pix_fmt yuv420p -crf 22 -preset medium -x264opts colormatrix=bt709:vbv-maxrate=62500:vbv-bufsize=78125 -vf \"bwdif=1:-1, hqdn3d=3, crop=632:472:8:0, pad=640:480:4:4:0x000000, scale=640:480\"  \"%(tempvideofile)\"",
+				"outputFilename": "video.mov",
+				"type": 0,
+				"pixelFormat": "",
+				"inputFormat": 0,
+				"checkReturnCode": true,
+				"logStdout": true,
+				"logStderr": true,
+				"bypassCompression": false,
+				"predeleteOutputFile": true
+			},
+			"L V ff 264 crop yadif60": {
+				"name": "L V ff 264 crop yadif60",
+				"program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+				"commandArguments": "-f rawvideo -s %(width)x%(height) -r %(fps) -i - -vcodec libx264 -pix_fmt yuv420p -crf 22 -preset medium -x264opts colormatrix=bt709:vbv-maxrate=62500:vbv-bufsize=78125 -vf \"yadif=1:-1, hqdn3d=3, crop=632:472:8:0, pad=640:480:4:4:0x000000, scale=640:480\"  \"%(tempvideofile)\"",
+				"outputFilename": "video.mov",
+				"type": 0,
+				"pixelFormat": "",
+				"inputFormat": 0,
+				"checkReturnCode": true,
+				"logStdout": true,
+				"logStderr": true,
+				"bypassCompression": false,
+				"predeleteOutputFile": true
+			},
+			"Encoder Profile 9": {
+				"name": "Encoder Profile 9",
+				"program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+				"commandArguments": "-f rawvideo -s %(width)x%(height) -r %(fps) -i - -vcodec libx264 -pix_fmt yuv420p -crf 22 -preset medium -x264opts colormatrix=bt709:vbv-maxrate=62500:vbv-bufsize=78125 -vf \"idet, yadif=mode=send_field:parity=auto:deint=interlaced, hqdn3d=3, crop=632:472:8:0, pad=640:480:4:4:0x000000, scale=640:480\"  \"%(tempvideofile)\"",
+				"outputFilename": "video.mov",
+				"type": 0,
+				"pixelFormat": "",
+				"inputFormat": 0,
+				"checkReturnCode": true,
+				"logStdout": true,
+				"logStderr": true,
+				"bypassCompression": false,
+				"predeleteOutputFile": true
+			},
+			"Encoder Profile 10": {
+				"name": "Encoder Profile 10",
+				"program": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+				"commandArguments": "-f rawvideo -s %(width)x%(height) -r %(fps) -i - -vcodec libx264 -pix_fmt yuv420p -crf 22 -preset medium -x264opts colormatrix=bt709:vbv-maxrate=62500:vbv-bufsize=78125 -vf \"yadif=mode=send_field:parity=auto:deint=interlaced, hqdn3d=3, crop=632:472:8:0, pad=640:480:4:4:0x000000, scale=640:480\"  \"%(tempvideofile)\"",
+				"outputFilename": "video.mov",
+				"type": 0,
+				"pixelFormat": "",
+				"inputFormat": 0,
+				"checkReturnCode": true,
+				"logStdout": true,
+				"logStderr": true,
+				"bypassCompression": false,
+				"predeleteOutputFile": true
+			}
+		}
+	}
+}
