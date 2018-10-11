@@ -1,0 +1,3 @@
+vcodec=libx264
+crf=26
+preset=fast
