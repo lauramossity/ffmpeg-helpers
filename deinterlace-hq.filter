@@ -1,1 +1,1 @@
-idet,yadif=mode=send_field:parity=auto:deint=interlaced,hqdn3d=3,crop=632:472:8:0,pad=640:480:4:4:0x000000,scale=640:480
+idet,yadif=mode=send_field:parity=auto:deint=interlaced,hqdn3d=3,crop=632:472:8:0,scale=640:480
