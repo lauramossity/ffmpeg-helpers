@@ -5,6 +5,7 @@ param (
 
 # Remove the time segments specified in a file.
 # Splits the video based on those time segments and re-joins the split clips.
+# The timestamps in the file must be in order from earliest to latest.
 # See https://trac.ffmpeg.org/wiki/Concatenate
 
 $sourcePath = Get-Item $source
@@ -24,16 +25,19 @@ $ffmpegLoc = "'C:\Program Files\ffmpeg\bin\ffmpeg.exe'"
 
 $splitCommand = "$ffmpegLoc -i $source"
 
-# TODO if initialized like ,@(), end up with blank initial element
+# If initialized like ,@(), initial element is blank (?)
 $filenames = @()
 
 # Generate the ffmpeg command to split
 $i = 0;
 foreach($pair in $segmentArray) {
-    # end segment, start cutting from pair start
-    $filename = "$($sourcePath.BaseName)-part$($i.ToString("00"))$($sourcePath.Extension)"
-    $filenames += $filename
-    $splitCommand += " -to $($pair[0]) $filename"
+    # If the timestamp is not 0 (contains characters other than 0, :, or .)
+    if( $pair[0] -match '.*[^:.0].*' ) {
+        # end segment, start cutting from pair start
+        $filename = "$($sourcePath.BaseName)-part$($i.ToString("00"))$($sourcePath.Extension)"
+        $filenames += $filename
+        $splitCommand += " -to $($pair[0]) $filename"
+    }
 
     # start time for next segment
     $splitCommand += " -ss $($pair[1])"
