@@ -57,7 +57,7 @@ def main(source_path):
             with open(STATS_FILE_PATH, 'w') as stats_file:
                 stats_manager.save_to_csv(stats_file, base_timecode)
 
-        print('List of scenes obtained, high threshold:')
+        print('List of scenes obtained, high threshold (%s):' % HIGH_CONTENT_THRESHOLD)
         for i, scene in enumerate(scene_list_high_threshold):
             print('    Scene %2d: Start,End Timecodes: %s,%s Frames: %d,%d' % (
                 i+1,
@@ -76,7 +76,7 @@ def main(source_path):
         scene_manager.detect_scenes(frame_source=video_manager)
         scene_list_low_threshold = scene_manager.get_scene_list(base_timecode)
 
-        print('List of scenes obtained, low threshold:')
+        print('List of scenes obtained, low threshold (%s):' % LOW_CONTENT_THRESHOLD)
         for i, scene in enumerate(scene_list_low_threshold):
             print('    Scene %2d: Start,End Timecodes: %s,%s Frames: %d,%d' % (
                 i+1,
