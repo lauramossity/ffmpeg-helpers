@@ -9,8 +9,8 @@ from scenedetect.frame_timecode import FrameTimecode
 from scenedetect.stats_manager import StatsManager
 from scenedetect.detectors import ContentDetector
 
-
 def main(source_path):
+    SOURCE_FILENAME = os.path.splitext(os.path.basename(source_path))[0]
     STATS_FILE_PATH = os.path.basename(source_path) + '.stats.csv'
 
     HIGH_CONTENT_THRESHOLD = 55.0 # Try to get big scene changes - new scenery/setting
@@ -40,6 +40,12 @@ def main(source_path):
 
         # # Start detection 3 seconds in
         # video_manager.set_duration(start_time=base_timecode+3.0)
+
+        # # Only use a small amount of the video
+        # start_time = base_timecode + 20     # 00:00:00.667
+        # end_time = base_timecode + 20.0     # 00:00:20.000
+        # # Set video_manager duration to read frames from 00:00:00 to 00:00:20.
+        # video_manager.set_duration(start_time=start_time, end_time=end_time)
 
         # Start video_manager.
         video_manager.start()
@@ -83,12 +89,23 @@ def main(source_path):
                 scene[0].get_timecode(), scene[1].get_timecode(),
                 scene[0].get_frames(), scene[1].get_frames()))
 
-        # TODO use ffmpeg to split into highly compressed videos
         # TODO save timecodes to csv or text file
+
+        # use ffmpeg to split into highly compressed videos
+        if scenedetect.video_splitter.is_ffmpeg_available():
+            if scene_list_high_threshold:
+                scenedetect.video_splitter.split_video_ffmpeg(video_manager.get_video_paths(), scene_list_high_threshold,
+                    os.path.join(os.getcwd(), '${VIDEO_NAME}-major-scene-${SCENE_NUMBER}.mp4'), SOURCE_FILENAME, 
+                    arg_override='-c:v libx264 -preset ultrafast -vf scale=320:-2 -crf 32 -c:a copy')
+
+
+            if scene_list_low_threshold:
+                scenedetect.video_splitter.split_video_ffmpeg(video_manager.get_video_paths(), scene_list_low_threshold, 
+                    os.path.join(os.getcwd(), '${VIDEO_NAME}-minor-scene-${SCENE_NUMBER}.mp4'), SOURCE_FILENAME,
+                    arg_override='-c:v libx264 -preset ultrafast -vf scale=320:-2 -crf 32 -c:a copy')
 
     finally:
         video_manager.release()
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("source", help="path to the source video")
