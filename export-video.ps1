@@ -7,8 +7,6 @@ param (
 	[string]$vpresetfile
 )
 
-$ffmpegLoc = "'C:\Program Files\ffmpeg\bin\ffmpeg.exe'"
-
 # timestamp args after input for proper end stamp. see https://trac.ffmpeg.org/wiki/Seeking
 if($timestamps) {
 	if($fastseek) {
@@ -38,7 +36,7 @@ $audioFilters = 'pan=mono|c0=c0'
 $audioArgs = "-c:a aac -b:a 192k -ar 48000 -af '$audioFilters'"
 
 # Need to hardcode pix_fmt - not allowed in preset file
-$command = "$ffmpegLoc $sourceAndSeekArgs $audioArgs $videoPresetArgs -pix_fmt yuv420p $videoFilterArgs -f mp4 $output"
+$command = "ffmpeg $sourceAndSeekArgs $audioArgs $videoPresetArgs -pix_fmt yuv420p $videoFilterArgs -f mp4 $output"
 
 echo "Executing ffmpeg command:" $command
 Invoke-Expression "& $command"

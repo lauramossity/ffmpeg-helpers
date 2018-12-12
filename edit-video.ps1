@@ -21,9 +21,7 @@ for($i = 0; $i -lt $segmentPairs.Length; $i++) {
     $segmentArray[$i] = $segmentPairs[$i].Split(",");
 }
 
-$ffmpegLoc = "'C:\Program Files\ffmpeg\bin\ffmpeg.exe'"
-
-$splitCommand = "$ffmpegLoc -i $source"
+$splitCommand = "ffmpeg -i $source"
 
 # If initialized like ,@(), initial element is blank (?)
 $filenames = @()
@@ -61,7 +59,7 @@ Invoke-Expression "& $splitCommand"
 # Needs to be UTF-8 or ANSI not UTF-BOM - https://trac.ffmpeg.org/ticket/3718
 $(foreach ($file in $filenames) { echo "file `'$file`'" }) | out-file -encoding ASCII segments.txt
 
-$concatCommand = "$ffmpegLoc -f concat -i segments.txt -c copy $($sourcePath.BaseName)-combined$($sourcePath.Extension)"
+$concatCommand = "ffmpeg -f concat -i segments.txt -c copy $($sourcePath.BaseName)-combined$($sourcePath.Extension)"
 
 # TODO - concat -i file1.mp4 -i file2.mp4 ... method resulted in file1.mp4: Invalid data found when processing input
 
