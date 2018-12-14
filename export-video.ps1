@@ -19,7 +19,7 @@ if($timestamps) {
 }
 
 #Find interlaced frames, deinterlace only interlaced frames, denoise, remove 8px from left and bottom, add black padding back, ensure original scale
-$videoFilters = "idet, yadif=mode=send_field:parity=auto:deint=interlaced, hqdn3d=3, crop=632:472:8:0, scale=640:480"
+$videoFilters = "yadif=mode=send_field:parity=tff:deint=all, hqdn3d=8, crop=632:472:8:0, scale=640:480"
 
 if($vfilterscript) {
 	$videoFilterArgs = "-filter_script:v $vfilterscript"

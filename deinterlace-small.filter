@@ -1,1 +1,1 @@
-idet, yadif=deint=interlaced, hqdn3d=3, crop=632:472:8:0, pad=640:480:4:4:0x000000, scale=w=iw*3/4:h=ih*3/4, fps=30
+yadif=mode=send_field:parity=tff:deint=all,hqdn3d=8,crop=632:472:8:0,scale=w=480:h=360,fps=30
