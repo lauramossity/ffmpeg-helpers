@@ -53,7 +53,7 @@ $splitCommand += " -codec:v copy -codec:a copy -avoid_negative_ts 1"
 echo "Executing ffmpeg split command:" $splitCommand
 Invoke-Expression "& $splitCommand"
 
-# Generate a file with the list of files to re-join
+# Generate a file segments.txt with the list of files to re-join
 # Contains lines that look like:
 # file 'source-video-part00.mp4'
 # Needs to be UTF-8 or ANSI not UTF-BOM - https://trac.ffmpeg.org/ticket/3718
