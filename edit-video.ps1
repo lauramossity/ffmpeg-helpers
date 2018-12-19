@@ -50,7 +50,7 @@ $splitCommand += " $filename"
 # Need avoid_negative_ts flag so that split segments will have the 0 timestamp at the start of the video
 $splitCommand += " -codec:v copy -codec:a copy -avoid_negative_ts 1"
 
-echo "Executing ffmpeg split command:" $splitCommand
+Write-Host "Executing ffmpeg split command:" $splitCommand -ForegroundColor Yellow
 Invoke-Expression "& $splitCommand"
 
 # Generate a file segments.txt with the list of files to re-join
@@ -63,7 +63,7 @@ $concatCommand = "ffmpeg -f concat -i segments.txt -c copy $($sourcePath.BaseNam
 
 # TODO - concat -i file1.mp4 -i file2.mp4 ... method resulted in file1.mp4: Invalid data found when processing input
 
-echo "Executing ffmpeg concatenation command:" $concatCommand
+Write-Host "Executing ffmpeg concatenation command:" $concatCommand -ForegroundColor Yellow
 Invoke-Expression "& $concatCommand"
 
 # TODO clean up intermediate files

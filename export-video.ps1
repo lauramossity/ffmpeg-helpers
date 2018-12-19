@@ -46,5 +46,5 @@ $audioArgs = "-c:a aac -b:a 192k -ar 48000 -af '$audioFilters'"
 # Need to hardcode pix_fmt - not allowed in preset file
 $command = "ffmpeg $sourceAndSeekArgs $audioArgs $videoPresetArgs -pix_fmt yuv420p $videoFilterArgs -f mp4 $output"
 
-echo "Executing ffmpeg command:" $command
+Write-Host "Executing ffmpeg command:" $command -ForegroundColor Yellow
 Invoke-Expression "& $command"
