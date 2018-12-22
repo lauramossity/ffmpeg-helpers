@@ -67,7 +67,7 @@ def main(source_path):
             with open(STATS_FILE_PATH, 'w') as stats_file:
                 stats_manager.save_to_csv(stats_file, base_timecode)
 
-        with open(os.path.join(OUTPUT_FOLDER, SOURCE_FILENAME + 'scenes-' + str(HIGH_CONTENT_THRESHOLD) + 'threshold.csv'), 'w') as major_scenes_csv:
+        with open(os.path.join(OUTPUT_FOLDER, SOURCE_FILENAME + '-scenes-' + str(HIGH_CONTENT_THRESHOLD) + '-threshold.csv'), 'w') as major_scenes_csv:
             fieldnames = ['scene_number','start_timecode','end_timecode','start_frame','end_frame','notes']
             major_scenes_csv_writer = csv.DictWriter(major_scenes_csv, fieldnames=fieldnames, lineterminator='\n')
             major_scenes_csv_writer.writeheader()
@@ -93,7 +93,7 @@ def main(source_path):
         scene_manager.detect_scenes(frame_source=video_manager)
         scene_list_low_threshold = scene_manager.get_scene_list(base_timecode)
         
-        with open(os.path.join(OUTPUT_FOLDER, SOURCE_FILENAME + 'scenes-' + str(LOW_CONTENT_THRESHOLD) + 'threshold.csv'), 'w') as minor_scenes_csv:
+        with open(os.path.join(OUTPUT_FOLDER, SOURCE_FILENAME + '-scenes-' + str(LOW_CONTENT_THRESHOLD) + '-threshold.csv'), 'w') as minor_scenes_csv:
             fieldnames = ['scene_number','start_timecode','end_timecode','start_frame','end_frame','notes']
             minor_scenes_csv_writer = csv.DictWriter(minor_scenes_csv, fieldnames=fieldnames, lineterminator='\n')
             minor_scenes_csv_writer.writeheader()
