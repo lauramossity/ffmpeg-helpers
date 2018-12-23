@@ -87,12 +87,14 @@ Alternatively, the standalone PySceneDetect can be used to do each threshold sep
 ### Editing
 TODO
 ```PowerShell
-edit-video.ps1 -source path\to\source\video.mp4 -segmentstoremove path\to\file\with\segments.segments
+edit-video.ps1 -source path\to\source\video.mp4 -segmentstoremove path\to\file\with\segments-to-cut.csv
 ```
-A `.segments` file contains a list of pairs of time intervals to be removed. Each pair is separated by `;` and the timestamps in the pair are separated by `,`  
+The `.csv` file contains pairs of time intervals to be removed, designated by the required columns `start_timecode` and `end_timecode`. Any other columns are safely ignored.
 Example:
-```
-01:00,02:00;15:11.1,18:45.8
+```csv
+start_timecode,end_timecode,notes
+01:00,02:00,a note
+15:11.1,18:45.8,
 ```
 In this case, video from 1 minute in to 2 minutes in, and from 15:11.1 to 18:45.8 will be removed from the output video.
 

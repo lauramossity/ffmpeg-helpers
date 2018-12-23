@@ -3,23 +3,15 @@ param (
 	[Parameter(Mandatory=$true)][string]$segmentstoremove
 )
 
-# Remove the time segments specified in a file.
+# Remove the time segments specified in a csv file.
 # Splits the video based on those time segments and re-joins the split clips.
 # The timestamps in the file must be in order from earliest to latest.
 # See https://trac.ffmpeg.org/wiki/Concatenate
 
 $sourcePath = Get-Item $source
 
-$strSegmentList = Get-Content $segmentstoremove -Raw
-
-# Split input list into comma-separated pairs
-$segmentPairs = $strSegmentList.Split(";")
-
-# Fill a multi-dimensional array with the comma-separated pairs
-$segmentArray = ,@() * $segmentPairs.Length
-for($i = 0; $i -lt $segmentPairs.Length; $i++) {
-    $segmentArray[$i] = $segmentPairs[$i].Split(",");
-}
+# Requires columns named start_timecode and end_timecode
+$segmentRows = Import-Csv $segmentstoremove
 
 $splitCommand = "ffmpeg -i $source"
 
@@ -27,18 +19,21 @@ $splitCommand = "ffmpeg -i $source"
 $filenames = @()
 
 # Generate the ffmpeg command to split
+# TODO error if no valid rows
+# TODO error if segments are out of order
+# TODO error if exactly adjacent segments
 $i = 0;
-foreach($pair in $segmentArray) {
+foreach($segmentRow in $segmentRows) {
     # If the timestamp is not 0 (contains characters other than 0, :, or .)
-    if( $pair[0] -match '.*[^:.0].*' ) {
+    if( $segmentRow.start_timecode -match '.*[^:.0].*' ) {
         # end segment, start cutting from pair start
         $filename = "$($sourcePath.BaseName)-part$($i.ToString("00"))$($sourcePath.Extension)"
         $filenames += $filename
-        $splitCommand += " -to $($pair[0]) $filename"
+        $splitCommand += " -to $($segmentRow.start_timecode) $filename"
     }
 
     # start time for next segment
-    $splitCommand += " -ss $($pair[1])"
+    $splitCommand += " -ss $($segmentRow.end_timecode)"
 
     $i++
 }
