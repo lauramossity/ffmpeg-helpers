@@ -39,10 +39,12 @@ Path to the lossless source video from [Lossless Capture using VirtualDub](#loss
 Path to the output MP4 file (must have `.mp4` extension)
 
 **`-timestamps`** [optional]  
-TODO Use only a segment of the source video
+Specify timestamps for a segment of the source video. If `-fastseek` is set, looks like `-timestamps <start-time>,<segment-length>`, otherwise `-timestamps <start-time>,<end-time>`
+
+Example: `-fastseek -timestamps 1:01.123,2` for a segment starting at 1 minute, 1 second, 123ms that lasts 2 seconds.
 
 **`-fastseek`** [optional]  
-TODO
+Do a faster but slightly less accurate seek when getting the segment. Does the "third command" detailed at https://trac.ffmpeg.org/wiki/Seeking#Notes instead of the second command.
 
 **`-vfilterscript`** [optional]  
 Path to a file that contains video filters (the `*.filter` files in this repository). This becomes the argument to the ffmpeg `-filter_script:v` argument. The contents of the file should be able to work if passed to the `-vf` ffmpeg argument.  
@@ -52,10 +54,30 @@ Defaults to [deinterlace-hq.filter](deinterlace-hq.filter). If `deinterlace-hq.f
 ```
 
 **`-vpresetfile`** [optional]  
-TODO
+ffmpeg file containing video encoder (not filter) related arguments.
 
-### Filter and Preset File Reference
-TODO
+### Filter Reference
+**`deinterlace-hq.filter`** [default]  
+* Deinterlace using `yadif`. Output one frame for each field, deinterlace all frames, assume top field is first
+* Denoise using `hqdn3d`. `luma_spatial` is set to 8, which is relatively high. (Other parameters can be based on `luma_spatial`)
+* Crop 8px from left and bottom to remove overscan noise
+* Scale back up to 640x420
+
+The output ends up being ~60fps after deinterlacing because of one frame for each field.
+
+**`deinterlace-small.filter`**  
+Same as `deinterlace-hq.filter` but 30fps and scaled to 480x360.
+
+**`deinterlace-hq-border-pad.filter`**  
+Same as `deinterlace-hq.filter` but with 4px of padding added to all 4 sides to compensate for the overscan cropping.
+
+### ffpreset Reference
+**`lm-camcorder-hq.ffpreset`** [default]  
+ General purpose high quality but slow H264 settings.
+
+**`lm-camcorder-small.ffpreset`**  
+To use for making clips to share when file size is important. General purpose medium quality H264 settings.
+
 
 ---
 ## Editing and Splitting using pyscenedetect and ffmpeg
