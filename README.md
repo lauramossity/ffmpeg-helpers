@@ -53,29 +53,33 @@ Defaults to [deinterlace-hq.filter](deinterlace-hq.filter). If `deinterlace-hq.f
 -vf 'yadif=mode=send_field:parity=tff:deint=all, hqdn3d=8, crop=632:472:8:0, scale=640:480'
 ```
 
+See [Filter Reference](#filter-reference)
+
 **`-vpresetfile`** [optional]  
 ffmpeg file containing video encoder (not filter) related arguments.
 
+See [ffpreset Reference](#ffpreset-reference)
+
 ### Filter Reference
-**`deinterlace-hq.filter`** [default]  
-* Deinterlace using `yadif`. Output one frame for each field, deinterlace all frames, assume top field is first
-* Denoise using `hqdn3d`. `luma_spatial` is set to 8, which is relatively high. (Other parameters can be based on `luma_spatial`)
-* Crop 8px from left and bottom to remove overscan noise
+**[deinterlace-hq.filter](deinterlace-hq.filter)** [default]  
+* Deinterlace using [yadif](https://ffmpeg.org/ffmpeg-filters.html#yadif-1). Output one frame for each field, deinterlace all frames, assume top field is first
+* Denoise using [hqdn3d](https://ffmpeg.org/ffmpeg-filters.html#hqdn3d-1). `luma_spatial` is set to 8, which is relatively high. (Other parameters calculated from `luma_spatial`)
+* Crop 8px from left and bottom to remove head switching noise and dark overscan area
 * Scale back up to 640x420
 
 The output ends up being ~60fps after deinterlacing because of one frame for each field.
 
-**`deinterlace-small.filter`**  
-Same as `deinterlace-hq.filter` but 30fps and scaled to 480x360.
+**[deinterlace-small.filter](deinterlace-small.filter)**  
+Same as [deinterlace-hq.filter](deinterlace-hq.filter) but 30fps and scaled to 480x360.
 
-**`deinterlace-hq-border-pad.filter`**  
-Same as `deinterlace-hq.filter` but with 4px of padding added to all 4 sides to compensate for the overscan cropping.
+**[deinterlace-hq-border-pad.filter](deinterlace-hq-border-pad.filter)**  
+Same as [deinterlace-hq.filter](deinterlace-hq.filter) but with 4px of padding added to all 4 sides to compensate for the overscan cropping.
 
 ### ffpreset Reference
-**`lm-camcorder-hq.ffpreset`** [default]  
+**[lm-camcorder-hq.ffpreset](lm-camcorder-hq.ffpreset)** [default]  
  General purpose high quality but slow H264 settings.
 
-**`lm-camcorder-small.ffpreset`**  
+**[lm-camcorder-small.ffpreset](lm-camcorder-small.ffpreset)**  
 To use for making clips to share when file size is important. General purpose medium quality H264 settings.
 
 
@@ -93,7 +97,7 @@ The script creates a folder in the current working directory. In this subfolder 
 * CSV files (`<videoname>-scenes-<threshold>-threshold.csv`) containing the detected scene data at both thresholds
 * If ffmpeg is available, low-quality compressed videos of each scene detected (to be used to preview scenes)
 * `<videoname>.stats.csv` - contains the stats for each frame of the video. This is reused in the second pass for the second threshold and on subsequent runs if found.
-From the timestamps in the CSV files, construct a `.segments` file described below in [Editing](#editing).
+From the timestamps in the CSV files, you can then construct a `.csv` file described below in [Editing](#editing).
 
 #### Dependencies
 * Python (script developed against 3.7)
@@ -107,7 +111,7 @@ Alternatively, the standalone PySceneDetect can be used to do each threshold sep
 <!-- TODO: Add example --->
 
 ### Editing
-TODO
+Use the [edit-video.ps1](edit-video.ps1) script to remove segments from a video without re-encoding. This should be done on the H264 MP4 output from [Processing and compression using ffmpeg](#processing-and-compression-using-ffmpeg).
 ```PowerShell
 edit-video.ps1 -source path\to\source\video.mp4 -segmentstoremove path\to\file\with\segments-to-cut.csv
 ```
