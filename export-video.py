@@ -1,8 +1,42 @@
 import argparse
 import os
+import subprocess
 
-def main(source_path):
-    print("hello")
+def export_video(args):
+    print(args)
+
+    # Path to source video and which segment
+    sourceAndSeekArgs = ["-i", args.source]
+    if(args.time_segment_fast):
+        sourceAndSeekArgs = ["-ss", args.time_segment_fast[0], "-i", args.source, "-t", args.time_segment_fast[1]]
+    elif(args.time_segment_slow):
+        sourceAndSeekArgs = ["-i", args.source, "-ss", args.time_segment_slow[0], "-to", args.time_segment_slow[1]]
+
+    # Audio: 192kbps, 48000, Select left audio channel to mono
+    audioFilters = "'pan=mono|c0=c0'"
+    audioArgs = ["-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-af", audioFilters]
+    
+    ffmpegArgs = ["ffmpeg", *sourceAndSeekArgs, *audioArgs]
+
+    # Format/encoding presets
+    if(args.vpf):
+        ffmpegArgs.extend(["-fpre:v", args.vpf])
+
+    ffmpegArgs.extend(["-pix_fmt", "yuv420p"])
+
+    # Video output filters
+    if(args.vfs):
+        ffmpegArgs.extend(["-filter_script:v", args.vfs])
+    else:
+        #Find interlaced frames, deinterlace only interlaced frames, denoise, remove 8px from left and bottom, add black padding back, ensure original scale
+        ffmpegArgs.extend(["-vf", "'yadif=mode=send_field:parity=tff:deint=all, hqdn3d=8, crop=632:472:8:0, scale=640:480'"])
+
+    # Output
+    ffmpegArgs.extend(["-f", "mp4", args.destination])
+
+    print("Running ffmpeg command:")
+    print(' '.join(ffmpegArgs) + '\n\n')
+    subprocess.run(ffmpegArgs)
 
 if __name__ == "__main__":
     SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -32,4 +66,4 @@ if __name__ == "__main__":
     timestampMutexGroup.add_argument("--time-segment-slow", nargs=2, metavar=("START_TIMESTAMP", "END_TIMESTAMP"), help="Time segment to extract using a slow seek. Example: 1:01.123 1:03:123")
     
     args = parser.parse_args()
-    main(args.source)
+    export_video(args)
