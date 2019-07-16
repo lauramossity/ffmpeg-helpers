@@ -44,7 +44,7 @@ Specify timestamps for a segment of the source video. If `-fastseek` is set, loo
 Example: `-fastseek -timestamps 1:01.123,2` for a segment starting at 1 minute, 1 second, 123ms that lasts 2 seconds.
 
 **`-fastseek`** [optional]  
-Do a faster but slightly less accurate seek when getting the segment. Does the "third command" detailed at https://trac.ffmpeg.org/wiki/Seeking#Notes instead of the second command.
+Do a faster seek when getting the segment, using the keyframe method. May be inaccurate on stream copy. Does the "third command" detailed at https://trac.ffmpeg.org/wiki/Seeking#Notes instead of the second command.
 
 **`-vfilterscript`** [optional]  
 Path to a file that contains video filters (the `*.filter` files in this repository). This becomes the argument to the ffmpeg `-filter_script:v` argument. The contents of the file should be able to work if passed to the `-vf` ffmpeg argument.  
