@@ -8,11 +8,11 @@ param (
 
 if($fastseek)
 {
-	$openingArgs = "-ss", $timestamps[0], "-i", $source, "-t", $timestamps[1]
+	$openingArgs = "-ss", $timestamps[0], "-i", "'$source'", "-t", $timestamps[1]
 }
 else
 {
-	$openingArgs = "-i", $source, "-ss", $timestamps[0], "-to", $timestamps[1]
+	$openingArgs = "-i", "'$source'", "-ss", $timestamps[0], "-to", $timestamps[1]
 }
 
 # removed -crf 27 -preset fast, trying slow
@@ -21,4 +21,4 @@ else
 
 #trim before other filters to get right frames
 
-& ffmpeg @openingArgs -an -vcodec libx264 -pix_fmt yuv420p -preset slow -vf "idet, yadif=mode=send_field:parity=auto:deint=interlaced, hqdn3d=3, crop=632:472:8:0, scale=w=iw*1/2:h=ih*1/2, fps=15" -f mp4 $output
+& ffmpeg @openingArgs -an -vcodec libx264 -pix_fmt yuv420p -preset slow -vf "idet, yadif=mode=send_field:parity=auto:deint=interlaced, hqdn3d=3, crop=632:472:8:0, scale=w=iw*1/2:h=ih*1/2, fps=15" -f mp4 "'$output'"

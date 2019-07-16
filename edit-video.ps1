@@ -8,12 +8,14 @@ param (
 # The timestamps in the file must be in order from earliest to latest.
 # See https://trac.ffmpeg.org/wiki/Concatenate
 
+# TODO strip whitespace
 $sourcePath = Get-Item $source
+$sourcePathBaseName = $sourcePath.replace(' ', '_')
 
 # Requires columns named start_timecode and end_timecode
 $segmentRows = Import-Csv $segmentstoremove
 
-$splitCommand = "ffmpeg -i $source"
+$splitCommand = "ffmpeg -i '$source'"
 
 # If initialized like ,@(), initial element is blank (?)
 $filenames = @()
@@ -27,7 +29,7 @@ foreach($segmentRow in $segmentRows) {
     # If the timestamp is not 0 (contains characters other than 0, :, or .)
     if( $segmentRow.start_timecode -match '.*[^:.0].*' ) {
         # end segment, start cutting from pair start
-        $filename = "$($sourcePath.BaseName)-part$($i.ToString("00"))$($sourcePath.Extension)"
+        $filename = "$($sourcePathBaseName)-part$($i.ToString("00"))$($sourcePath.Extension)"
         $filenames += $filename
         $splitCommand += " -to $($segmentRow.start_timecode) $filename"
     }
@@ -38,7 +40,7 @@ foreach($segmentRow in $segmentRows) {
     $i++
 }
 
-$filename = "$($sourcePath.BaseName)-part$($i.ToString("00"))$($sourcePath.Extension)"
+$filename = "$($sourcePathBaseName)-part$($i.ToString("00"))$($sourcePath.Extension)"
 $filenames += $filename
 $splitCommand += " $filename"
 
@@ -54,7 +56,7 @@ Invoke-Expression "& $splitCommand"
 # Needs to be UTF-8 or ANSI not UTF-BOM - https://trac.ffmpeg.org/ticket/3718
 $(foreach ($file in $filenames) { echo "file `'$file`'" }) | out-file -encoding ASCII segments.txt
 
-$concatCommand = "ffmpeg -f concat -i segments.txt -c copy $($sourcePath.BaseName)-combined$($sourcePath.Extension)"
+$concatCommand = "ffmpeg -f concat -i segments.txt -c copy $($sourcePathBaseName)-combined$($sourcePath.Extension)"
 
 # TODO - concat -i file1.mp4 -i file2.mp4 ... method resulted in file1.mp4: Invalid data found when processing input
 

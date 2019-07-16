@@ -10,12 +10,12 @@ param (
 # timestamp args after input for proper end stamp. see https://trac.ffmpeg.org/wiki/Seeking
 if($timestamps) {
 	if($fastseek) {
-		$sourceAndSeekArgs = "-ss", $timestamps[0], "-i", $source, "-t", $timestamps[1]
+		$sourceAndSeekArgs = "-ss", $timestamps[0], "-i", "'$source'",  "-t", $timestamps[1]
 	} else {
-		$sourceAndSeekArgs = "-i", $source, "-ss", $timestamps[0], "-to", $timestamps[1]
+		$sourceAndSeekArgs = "-i", "'$source'", "-ss", $timestamps[0], "-to", $timestamps[1]
 	}
 } else {
-	$sourceAndSeekArgs = "-i", $source
+	$sourceAndSeekArgs = "-i", "'$source'"
 }
 
 #Find interlaced frames, deinterlace only interlaced frames, denoise, remove 8px from left and bottom, add black padding back, ensure original scale
@@ -44,7 +44,7 @@ $audioFilters = 'pan=mono|c0=c0'
 $audioArgs = "-c:a aac -b:a 192k -ar 48000 -af '$audioFilters'"
 
 # Need to hardcode pix_fmt - not allowed in preset file
-$command = "ffmpeg $sourceAndSeekArgs $audioArgs $videoPresetArgs -pix_fmt yuv420p $videoFilterArgs -f mp4 $output"
+$command = "ffmpeg $sourceAndSeekArgs $audioArgs $videoPresetArgs -pix_fmt yuv420p $videoFilterArgs -f mp4 '$output'"
 
 Write-Host "Executing ffmpeg command:" $command -ForegroundColor Yellow
 Invoke-Expression "& $command"
