@@ -1,13 +1,10 @@
 import unittest
 from unittest import TestCase, mock
+import re
 
 import ffmpeg_helpers
 
-# class CustomAssertions(TestCase):
-#     def assertCmdLineArgsContains(self,):
-#         if 
-
-def assert_called_once_with_substring_of_args(mockObject, expectedArgsSubstring):
+def assert_called_once_joined_args_match_pattern(mockObject, expectedPattern):
     # Assert called exactly once
     if not mockObject.call_count == 1:
         msg = ("Expected '%s' to be called once. Called %s times.%s"
@@ -17,7 +14,7 @@ def assert_called_once_with_substring_of_args(mockObject, expectedArgsSubstring)
         raise AssertionError(msg)
 
     if mockObject.call_args is None:
-        expected = ("%s called with %s" % (mockObject._mock_name, expectedArgsSubstring))
+        expected = ("%s called with %s" % (mockObject._mock_name, expectedPattern))
         actual = 'not called.'
         error_message = ('expected call not found.\nExpected: %s\nActual: %s'
                 % (expected, actual))
@@ -27,8 +24,8 @@ def assert_called_once_with_substring_of_args(mockObject, expectedArgsSubstring)
     joinedArgs = ' '.join(mockObject.call_args[0][0])
 
     # Assert that the expected string is a substring of the joined ordered arguments
-    if expectedArgsSubstring not in joinedArgs:
-        expected = ("%s called with args that contain '%s'" % (mockObject._mock_name, expectedArgsSubstring))
+    if not re.search(expectedPattern, joinedArgs):
+        expected = ("%s called with args that match the pattern '%s'" % (mockObject._mock_name, expectedPattern))
         actual = ("%s called with %s" % (mockObject._mock_name, mockObject.call_args[0]))
         error_message = ('expected call not found.\nExpected: %s\nActual: %s'
                 % (expected, actual))
@@ -37,13 +34,47 @@ def assert_called_once_with_substring_of_args(mockObject, expectedArgsSubstring)
 class TestFfmpegHelpers(TestCase):
     def test_export(self):
         with mock.patch('subprocess.run') as MockRun:
-            ffmpeg_helpers.main("export -s asdf -d asdf".split())
-            assert_called_once_with_substring_of_args(MockRun, " -i asdf")
-            assert_called_once_with_substring_of_args(MockRun, " -f mp4 asdf")
-            # TODO preset and filter filenames
+            ffmpeg_helpers.main("export -s asdf -d qwerty".split())
+            assert_called_once_joined_args_match_pattern(MockRun, " -i asdf")
+            assert_called_once_joined_args_match_pattern(MockRun, " -f mp4 qwerty")
+            assert_called_once_joined_args_match_pattern(MockRun, "-fpre:v.*lm-camcorder-hq.ffpreset")
+            assert_called_once_joined_args_match_pattern(MockRun, "-filter_script:v.*deinterlace-hq.filter")
             MockRun.reset_mock()
 
-            # TODO match pattern (to find filename in substring)
+            ffmpeg_helpers.main("export -s inputfile -d outputfile --vfs filterscriptfile --vpf presetfile".split())
+            assert_called_once_joined_args_match_pattern(MockRun, " -i inputfile")
+            assert_called_once_joined_args_match_pattern(MockRun, " -f mp4 outputfile")
+            assert_called_once_joined_args_match_pattern(MockRun, "-fpre:v.*presetfile")
+            assert_called_once_joined_args_match_pattern(MockRun, "-filter_script:v.*filterscriptfile")
+            MockRun.reset_mock()
+
+            # ffmpeg_helpers.main("export -s asdf".split())
+            # MockRun.assert_not_called()
+            # ffmpeg_helpers.main("export -d asdf".split())
+            # MockRun.assert_not_called()
+            # ffmpeg_helpers.main("export --vfs asdf".split())
+            # MockRun.assert_not_called()
+
+            ffmpeg_helpers.main("export -s asdf -d qwerty".split())
+            assert_called_once_joined_args_match_pattern(MockRun, " -i asdf")
+            assert_called_once_joined_args_match_pattern(MockRun, " -f mp4 qwerty")
+            assert_called_once_joined_args_match_pattern(MockRun, "-fpre:v.*lm-camcorder-hq.ffpreset")
+            assert_called_once_joined_args_match_pattern(MockRun, "-filter_script:v.*deinterlace-hq.filter")
+            MockRun.reset_mock()
+            
+            ffmpeg_helpers.main("export -s asdf -d qwerty --time-segment-fast 2:45.784 30".split())
+            assert_called_once_joined_args_match_pattern(MockRun, " -ss 2:45.784 -i asdf -t 30")
+            assert_called_once_joined_args_match_pattern(MockRun, " -f mp4 qwerty")
+            MockRun.reset_mock()
+
+            ffmpeg_helpers.main("export -s asdf -d qwerty --time-segment-slow 2:45.784 5:12.372".split())
+            assert_called_once_joined_args_match_pattern(MockRun, " -i asdf -ss 2:45.784 -to 5:12.372")
+            assert_called_once_joined_args_match_pattern(MockRun, " -f mp4 qwerty")
+            MockRun.reset_mock()
+
+            # TODO spaces in file paths
+
+
 
 suite = unittest.TestLoader().loadTestsFromTestCase(TestFfmpegHelpers)
 unittest.TextTestRunner(verbosity=2).run(suite)
