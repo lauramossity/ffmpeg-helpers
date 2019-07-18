@@ -1,6 +1,7 @@
 import argparse
 import os
 import subprocess
+import sys
 
 def export_video(args):
     print(args)
@@ -72,7 +73,7 @@ def init_video_clip_subparser(subparsers, name, function, helpMessage, defaultFi
     
     return subparser
 
-if __name__ == "__main__":
+def main(args):
     DEFAULT_FILTER_SCRIPT = "deinterlace-hq.filter"
     DEFAULT_PRESET_FILE = "lm-camcorder-hq.ffpreset"
 
@@ -89,5 +90,8 @@ if __name__ == "__main__":
     edit_parser.add_argument("-s", "--source", help="path to the source video", required=True)
     edit_parser.add_argument("--segmentsToCut", help="path to a CSV file of segments to cut", required=True)
 
-    args = parser.parse_args()
-    args.func(args)
+    parsedArgs = parser.parse_args(args)
+    parsedArgs.func(parsedArgs)
+
+if __name__ == "__main__":
+    main(sys.argv[1:]) # for unit test
