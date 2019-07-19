@@ -2,6 +2,8 @@ import argparse
 import os
 import subprocess
 import sys
+import csv
+import re
 
 def export_video(args):
     print(args)
@@ -42,8 +44,74 @@ def export_video(args):
 def create_gif(args):
     print("Create Gif function")
 
+    # generate filename to output intermediate clip to
+
+    # assemble arguments to generate intermediate clip
+    # run args
+
+    # run ffmpeg to generate palette from intermediate clip
+
+    # generate filename to output gif to
+    # run ffmpeg to generate gif
+
 def edit_video(args):
     print("Edit Video function")
+    
+    # Remove the time segments specified in a csv file.
+    # Splits the video based on those time segments and re-joins the split clips.
+    # The timestamps in the file must be in order from earliest to latest.
+    # See https://trac.ffmpeg.org/wiki/Concatenate
+
+    # TODO get source filename, strip whitespace for output
+
+    sourceFileName, sourceFileExtension = os.path.splitext(os.path.basename(args.source))
+
+    # read CSV file and generate the ffmpeg command to split
+    # TODO error if no valid rows
+    # TODO error if segments are out of order
+    # TODO error if exactly adjacent segments (or merge segments?)
+    splitFfmpegArgs = ["ffmpeg", "-i", "'%s'" % args.source]
+    filenames = []
+    with open(args.segmentsToCut, mode='r') as segmentsFile:
+        reader = csv.DictReader(segmentsFile)
+        for counter, row in enumerate(reader):
+            # If the timestamp is not 0 (contains characters other than 0, :, or .)
+            if re.match('.*[^:.0].*', row['start_timecode']):
+                # end segment, start cutting from pair start
+                filename = "%s-part%02d%s" % (sourceFileName, counter, sourceFileExtension)
+                filenames.append(filename)
+                splitFfmpegArgs.extend(["-to", row['start_timecode'], filename])
+            
+            splitFfmpegArgs.extend(["-ss", row['end_timecode']])
+
+        filename = "%s-part%02d%s" % (sourceFileName, counter+1, sourceFileExtension)
+        filenames.append(filename)
+        splitFfmpegArgs.append(filename)
+
+    splitFfmpegArgs.extend("-codec:v copy -codec:a copy -avoid_negative_ts 1".split())
+    
+    print("Running ffmpeg split command:")
+    print(' '.join(splitFfmpegArgs) + '\n\n')
+    subprocess.run(splitFfmpegArgs)
+
+    # Generate a file segments.txt with the list of files to re-join
+    # Contains lines that look like:
+    # file 'source-video-part00.mp4'
+    # TODO Needs to be UTF-8 or ANSI not UTF-BOM - https://trac.ffmpeg.org/ticket/3718
+    with open('segments.txt', mode='r') as segmentsFile:
+        for filename in filenames:
+            segmentsFile.write("file '%s'\n" % filename)
+
+    concatFfmpegArgs = ["ffmpeg -f concat -i segments.txt -c copy".split()]
+    concatFfmpegArgs.append("%s-combined%s" % (sourceFileName, sourceFileExtension))
+
+    # TODO - concat -i file1.mp4 -i file2.mp4 ... method resulted in file1.mp4: Invalid data found when processing input
+
+    print("Running ffmpeg concat command:")
+    print(' '.join(concatFfmpegArgs) + '\n\n')
+    subprocess.run(concatFfmpegArgs)
+
+    # TODO clean up intermediate files
 
 def init_video_clip_subparser(subparsers, name, function, helpMessage, defaultFilterScript, defaultPresetfile):
     SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
