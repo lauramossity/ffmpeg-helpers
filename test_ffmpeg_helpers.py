@@ -41,12 +41,9 @@ class TestFfmpegHelpers(TestCase):
             assert_called_once_joined_args_match_pattern(MockRun, "-filter_script:v.*deinterlace-hq.filter")
             MockRun.reset_mock()
 
-            # ffmpeg_helpers.main("export -s asdf".split())
-            # MockRun.assert_not_called()
-            # ffmpeg_helpers.main("export -d asdf".split())
-            # MockRun.assert_not_called()
-            # ffmpeg_helpers.main("export --vfs asdf".split())
-            # MockRun.assert_not_called()
+            self.assertRaises(SystemExit, ffmpeg_helpers.main, "export -s asdf".split())
+            self.assertRaises(SystemExit, ffmpeg_helpers.main, "export -d asdf".split())
+            self.assertRaises(SystemExit, ffmpeg_helpers.main, "export --vfs asdf".split())
 
             # TODO spaces in file paths
     
