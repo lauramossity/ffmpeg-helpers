@@ -10,7 +10,7 @@ param (
 
 # TODO strip whitespace
 $sourcePath = Get-Item $source
-$sourcePathBaseName = $sourcePath.replace(' ', '_')
+$sourcePathBaseName = (Get-Item -Path $sourcePath).Basename.replace(' ', '_')
 
 # Requires columns named start_timecode and end_timecode
 $segmentRows = Import-Csv $segmentstoremove
