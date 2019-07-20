@@ -66,11 +66,13 @@ def edit_video(args):
 
     sourceFileName, sourceFileExtension = os.path.splitext(os.path.basename(args.source))
 
-    # read CSV file and generate the ffmpeg command to split
     # TODO error if no valid rows
     # TODO error if segments are out of order
     # TODO error if exactly adjacent segments (or merge segments?)
     splitFfmpegArgs = ["ffmpeg", "-i", "'%s'" % args.source]
+    splitFfmpegArgs.extend("-codec:v copy -codec:a copy -avoid_negative_ts 1".split())
+
+    # read CSV file and add timestamps and filenames to split to
     filenames = []
     with open(args.segmentsToCut, mode='r') as segmentsFile:
         reader = csv.DictReader(segmentsFile)
@@ -87,8 +89,6 @@ def edit_video(args):
         filename = "%s-part%02d%s" % (sourceFileName, counter+1, sourceFileExtension)
         filenames.append(filename)
         splitFfmpegArgs.append(filename)
-
-    splitFfmpegArgs.extend("-codec:v copy -codec:a copy -avoid_negative_ts 1".split())
     
     print("Running ffmpeg split command:")
     print(' '.join(splitFfmpegArgs) + '\n\n')
