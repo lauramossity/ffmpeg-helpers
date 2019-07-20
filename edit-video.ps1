@@ -17,6 +17,9 @@ $segmentRows = Import-Csv $segmentstoremove
 
 $splitCommand = "ffmpeg -i '$source'"
 
+# Need avoid_negative_ts flag so that split segments will have the 0 timestamp at the start of the video
+$splitCommand += " -codec:v copy -codec:a copy -avoid_negative_ts 1"
+
 # If initialized like ,@(), initial element is blank (?)
 $filenames = @()
 
@@ -43,9 +46,6 @@ foreach($segmentRow in $segmentRows) {
 $filename = "$($sourcePathBaseName)-part$($i.ToString("00"))$($sourcePath.Extension)"
 $filenames += $filename
 $splitCommand += " $filename"
-
-# Need avoid_negative_ts flag so that split segments will have the 0 timestamp at the start of the video
-$splitCommand += " -codec:v copy -codec:a copy -avoid_negative_ts 1"
 
 Write-Host "Executing ffmpeg split command:" $splitCommand -ForegroundColor Yellow
 Invoke-Expression "& $splitCommand"
