@@ -74,7 +74,7 @@ def edit_video(args):
     # TODO error if no valid rows
     # TODO error if segments are out of order
     # TODO error if exactly adjacent segments (or merge segments?)
-    splitFfmpegArgs = ["ffmpeg", "-i", "'%s'" % args.source]
+    splitFfmpegArgs = ["ffmpeg", "-i", args.source]
     splitFfmpegArgs.extend("-codec:v copy -codec:a copy -avoid_negative_ts 1".split())
 
     # read CSV file and add timestamps and filenames to split to
@@ -102,12 +102,12 @@ def edit_video(args):
     # Generate a file segments.txt with the list of files to re-join
     # Contains lines that look like:
     # file 'source-video-part00.mp4'
-    # TODO Needs to be UTF-8 or ANSI not UTF-BOM - https://trac.ffmpeg.org/ticket/3718
-    with open('segments.txt', mode='r') as segmentsFile:
+    # Needs to be UTF-8 or ANSI not UTF-BOM - https://trac.ffmpeg.org/ticket/3718
+    with open('segments.txt', mode='w+', encoding='utf-8') as segmentsFile:
         for filename in filenames:
             segmentsFile.write("file '%s'\n" % filename)
 
-    concatFfmpegArgs = ["ffmpeg -f concat -i segments.txt -c copy".split()]
+    concatFfmpegArgs = "ffmpeg -f concat -i segments.txt -c copy".split()
     concatFfmpegArgs.append("%s-combined%s" % (sourceFileName, sourceFileExtension))
 
     # TODO - concat -i file1.mp4 -i file2.mp4 ... method resulted in file1.mp4: Invalid data found when processing input
