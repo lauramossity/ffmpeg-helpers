@@ -4,20 +4,21 @@ import re
 
 import ffmpeg_helpers
 
+
 def assert_called_once_joined_args_match_pattern(mockObject, expectedPattern):
     # Assert called exactly once
     if not mockObject.call_count == 1:
         msg = ("Expected '%s' to be called once. Called %s times.%s"
-                % (mockObject._mock_name or 'mock',
-                    mockObject.call_count,
-                    mockObject._calls_repr()))
+               % (mockObject._mock_name or 'mock',
+                  mockObject.call_count,
+                  mockObject._calls_repr()))
         raise AssertionError(msg)
 
     if mockObject.call_args is None:
         expected = ("%s called with %s" % (mockObject._mock_name, expectedPattern))
         actual = 'not called.'
         error_message = ('expected call not found.\nExpected: %s\nActual: %s'
-                % (expected, actual))
+                         % (expected, actual))
         raise AssertionError(error_message)
 
     # Args from the first (only) call, ordered arguments from the first tuple member, joined into a string
@@ -28,8 +29,9 @@ def assert_called_once_joined_args_match_pattern(mockObject, expectedPattern):
         expected = ("%s called with args that match the pattern '%s'" % (mockObject._mock_name, expectedPattern))
         actual = ("%s called with %s" % (mockObject._mock_name, mockObject.call_args[0]))
         error_message = ('expected call not found.\nExpected: %s\nActual: %s'
-                % (expected, actual))
+                         % (expected, actual))
         raise AssertionError(error_message)
+
 
 class TestFfmpegHelpers(TestCase):
     def test_export(self):
@@ -46,7 +48,7 @@ class TestFfmpegHelpers(TestCase):
             self.assertRaises(SystemExit, ffmpeg_helpers.main, "export --vfs asdf".split())
 
             # TODO spaces in file paths
-    
+
     def test_export_using_preset_and_filterscript(self):
         with mock.patch('subprocess.run') as MockRun:
             ffmpeg_helpers.main("export -s inputfile -d outputfile --vfs filterscriptfile --vpf presetfile".split())
@@ -55,7 +57,7 @@ class TestFfmpegHelpers(TestCase):
             assert_called_once_joined_args_match_pattern(MockRun, "-fpre:v.*presetfile")
             assert_called_once_joined_args_match_pattern(MockRun, "-filter_script:v.*filterscriptfile")
             MockRun.reset_mock()
-            
+
     def test_export_time_segment(self):
         with mock.patch('subprocess.run') as MockRun:
             ffmpeg_helpers.main("export -s asdf -d qwerty --time-segment-fast 2:45.784 30".split())
