@@ -14,6 +14,10 @@ def assert_called_once_joined_args_match_pattern(mockObject, expectedPattern):
                   mockObject._calls_repr()))
         raise AssertionError(msg)
 
+    assert_nth_call_joined_args_match_pattern(mockObject, 1, expectedPattern)
+
+
+def assert_nth_call_joined_args_match_pattern(mockObject, n, expectedPattern):
     if mockObject.call_args is None:
         expected = ("%s called with %s" % (mockObject._mock_name, expectedPattern))
         actual = 'not called.'
@@ -21,13 +25,20 @@ def assert_called_once_joined_args_match_pattern(mockObject, expectedPattern):
                          % (expected, actual))
         raise AssertionError(error_message)
 
-    # Args from the first (only) call, ordered arguments from the first tuple member, joined into a string
-    joinedArgs = ' '.join(mockObject.call_args[0][0])
+    if mockObject.call_count < n:
+        expected = ("%s called with %s on %dth call" % (mockObject._mock_name, expectedPattern, n))
+        actual = 'not called %d times.' % n
+        error_message = ('expected call not found.\nExpected: %s\nActual: %s'
+                         % (expected, actual))
+        raise AssertionError(error_message)
+
+    # Args from the nth call, ordered arguments, first argument, joined into a string
+    joinedArgs = ' '.join(mockObject.call_args_list[n - 1][0][0])
 
     # Assert that the expected string is a substring of the joined ordered arguments
     if not re.search(expectedPattern, joinedArgs):
         expected = ("%s called with args that match the pattern '%s'" % (mockObject._mock_name, expectedPattern))
-        actual = ("%s called with %s" % (mockObject._mock_name, mockObject.call_args[0]))
+        actual = ("%s called with %s" % (mockObject._mock_name, mockObject.call_args_list[n - 1]))
         error_message = ('expected call not found.\nExpected: %s\nActual: %s'
                          % (expected, actual))
         raise AssertionError(error_message)
@@ -71,6 +82,29 @@ class TestFfmpegHelpers(TestCase):
             MockRun.reset_mock()
 
             # TODO spaces in file paths
+
+    def test_edit(self):
+        mock_file_1 = '''start_timecode,end_timecode,notes
+0:03:44.825,0:08:54.968
+0:11:14.424,0:12:50.019'''
+
+        with mock.patch('subprocess.run') as MockRun:
+            MockOpen = mock.mock_open(read_data=mock_file_1)
+            with(mock.patch('builtins.open', MockOpen, create=True)):
+                ffmpeg_helpers.main("edit -s asdf.xyz --segmentsToCut qwerty.csv".split())
+
+                assert_nth_call_joined_args_match_pattern(MockRun, 1,
+                                                          " -i asdf.xyz -codec:v copy -codec:a copy "
+                                                          "-avoid_negative_ts 1")
+                assert_nth_call_joined_args_match_pattern(MockRun, 1,
+                                                          "-to 0:03:44.825 asdf-part00.xyz -ss 0:08:54.968 -to "
+                                                          "0:11:14.424 asdf-part01.xyz -ss 0:12:50.019 asdf-part02.xyz")
+                assert_nth_call_joined_args_match_pattern(MockRun, 2,
+                                                          "-f concat -i segments.txt -c copy asdf-combined.xyz")
+
+        # TODO test start timestamp 0
+        # TODO check segments file for number of segments generated
+        # TODO test bad file and/or one with no lines
 
 
 suite = unittest.TestLoader().loadTestsFromTestCase(TestFfmpegHelpers)
