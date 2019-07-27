@@ -102,6 +102,25 @@ class TestFfmpegHelpers(TestCase):
                 assert_nth_call_joined_args_match_pattern(MockRun, 2,
                                                           "-f concat -i segments.txt -c copy asdf-combined.xyz")
 
+                MockRun.reset_mock()
+
+                ffmpeg_helpers.main(['edit', '-s', "./filename with spaces.xyz", '--segmentsToCut',
+                                     "./another filename with spaces.csv"])
+
+                print(MockRun.mock_calls)
+                print(MockRun.call_args_list[0])
+                assert_nth_call_joined_args_match_pattern(MockRun, 1,
+                                                          " -i ./filename with spaces.xyz -codec:v copy -codec:a copy "
+                                                          "-avoid_negative_ts 1")
+                assert_nth_call_joined_args_match_pattern(MockRun, 1,
+                                                          "-to 0:03:44.825 filename_with_spaces-part00.xyz "
+                                                          "-ss 0:08:54.968 -to 0:11:14.424 "
+                                                          "filename_with_spaces-part01.xyz "
+                                                          "-ss 0:12:50.019 filename_with_spaces-part02.xyz")
+                assert_nth_call_joined_args_match_pattern(MockRun, 2,
+                                                          "-f concat -i segments.txt -c copy "
+                                                          "filename_with_spaces-combined.xyz")
+
         # TODO test start timestamp 0
         # TODO check segments file for number of segments generated
         # TODO test bad file and/or one with no lines

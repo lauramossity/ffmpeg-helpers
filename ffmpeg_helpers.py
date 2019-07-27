@@ -60,16 +60,13 @@ def create_gif(args):
 
 
 def edit_video(args):
-    print("Edit Video function")
-
     # Remove the time segments specified in a csv file.
     # Splits the video based on those time segments and re-joins the split clips.
     # The timestamps in the file must be in order from earliest to latest.
     # See https://trac.ffmpeg.org/wiki/Concatenate
 
-    # TODO get source filename, strip whitespace for output
-
     sourceFileName, sourceFileExtension = os.path.splitext(os.path.basename(args.source))
+    sourceFileName = "_".join(sourceFileName.split())
 
     # TODO error if no valid rows
     # TODO error if segments are out of order
@@ -95,8 +92,11 @@ def edit_video(args):
         filenames.append(filename)
         splitFfmpegArgs.append(filename)
 
+    # if an arg has whitespace, surround with quotes for console output so that the command will work if copied
+    argsToPrint = list(map(lambda s: "'%s'" % s if re.search(r"\s", s) else s, splitFfmpegArgs))
     print("Running ffmpeg split command:")
-    print(' '.join(splitFfmpegArgs) + '\n\n')
+    print(' '.join(argsToPrint) + '\n\n')
+
     subprocess.run(splitFfmpegArgs)
 
     # Generate a file segments.txt with the list of files to re-join
@@ -112,6 +112,7 @@ def edit_video(args):
 
     # TODO - concat -i file1.mp4 -i file2.mp4 ... method resulted in file1.mp4: Invalid data found when processing input
 
+    # should have no whitespace in any file names
     print("Running ffmpeg concat command:")
     print(' '.join(concatFfmpegArgs) + '\n\n')
     subprocess.run(concatFfmpegArgs)
