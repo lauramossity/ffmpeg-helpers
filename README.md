@@ -26,27 +26,28 @@ TODO
 
 ---
 ## Processing and Compression using ffmpeg
-The [export-video.ps1](export-video.ps1) script uses FFMPEG to deinterlace, denoise, remove head-switching noise (in my video sources, 4px from the bottom and left of the frame), encode as H264 video/AAC audio in an MP4 container.
+The `export` command in the [ffmpeg_helpers.py](ffmpeg_helpers.py) script uses FFMPEG to deinterlace, denoise, remove head-switching noise (in my video sources, 4px from the bottom and left of the frame), encode as H264 video/AAC audio in an MP4 container.
 
-```PowerShell
-.\export-video.ps1 -source lossless-source-video.avi -output output-file.mp4 -vfilterscript .\deinterlace-hq.filter -vpresetfile .\lm-camcorder-hq.ffpreset
+```python
+python ffmpeg_helpers.py export -s lossless-source-video.avi -d output-file.mp4 --vfilterscript .\deinterlace-hq.filter --vpresetfile .\lm-camcorder-hq.ffpreset
 ```
 
-**`-source`**  
+**`-s, --source`**  
 Path to the lossless source video from [Lossless Capture using VirtualDub](#lossless-capture-using-virtualdub) (my sources are Lagarith/AVI)
 
-**`-output`**  
+**`-d, --destination`**  
 Path to the output MP4 file (must have `.mp4` extension)
 
-**`-timestamps`** [optional]  
-Specify timestamps for a segment of the source video. If `-fastseek` is set, looks like `-timestamps <start-time>,<segment-length>`, otherwise `-timestamps <start-time>,<end-time>`
+**`--time-segment-fast` OR `--time-segment-slow`** [optional]  
+Specify timestamps for a segment of the source video.
 
-Example: `-fastseek -timestamps 1:01.123,2` for a segment starting at 1 minute, 1 second, 123ms that lasts 2 seconds.
+`--time-segment-fast` does a faster seek when getting the segment, using the keyframe method. May be inaccurate on stream copy. Does the "third command" detailed at https://trac.ffmpeg.org/wiki/Seeking#Notes instead of the second command.
 
-**`-fastseek`** [optional]  
-Do a faster seek when getting the segment, using the keyframe method. May be inaccurate on stream copy. Does the "third command" detailed at https://trac.ffmpeg.org/wiki/Seeking#Notes instead of the second command.
+The second argument is the length of the segment to extract. Example: `--time-segment-fast 1:01.123 2` for a segment starting at 1 minute, 1 second, 123ms that lasts 2 seconds.
 
-**`-vfilterscript`** [optional]  
+`--time-segment-slow` does a slower seek but is more accurate on stream copy. The second argument is the timestamp to end at. Example: `--time-segment-slow 1:01.123 1:03:123`
+
+**`--vfs, --vfilterscript`** [optional]  
 Path to a file that contains video filters (the `*.filter` files in this repository). This becomes the argument to the ffmpeg `-filter_script:v` argument. The contents of the file should be able to work if passed to the `-vf` ffmpeg argument.  
 Defaults to [deinterlace-hq.filter](deinterlace-hq.filter). If `deinterlace-hq.filter` is not available, calls ffmpeg with
 ```
@@ -55,7 +56,7 @@ Defaults to [deinterlace-hq.filter](deinterlace-hq.filter). If `deinterlace-hq.f
 
 See [Filter Reference](#filter-reference)
 
-**`-vpresetfile`** [optional]  
+**`--vpf, --vpresetfile`** [optional]  
 ffmpeg file containing video encoder (not filter) related arguments.
 
 See [ffpreset Reference](#ffpreset-reference)
@@ -111,9 +112,9 @@ Alternatively, the standalone PySceneDetect can be used to do each threshold sep
 <!-- TODO: Add example --->
 
 ### Editing
-Use the [edit-video.ps1](edit-video.ps1) script to remove segments from a video without re-encoding. This should be done on the H264 MP4 output from [Processing and compression using ffmpeg](#processing-and-compression-using-ffmpeg).
+The `edit` command in the [ffmpeg_helpers.py](ffmpeg_helpers.py) script script to remove segments from a video without re-encoding. This should be done on the H264 MP4 output from [Processing and compression using ffmpeg](#processing-and-compression-using-ffmpeg).
 ```PowerShell
-edit-video.ps1 -source path\to\source\video.mp4 -segmentstoremove path\to\file\with\segments-to-cut.csv
+python ffmpeg_helpers.py edit -s path\to\source\video.mp4 --segmentsToCut path\to\file\with\segments-to-cut.csv
 ```
 The `.csv` file contains pairs of time intervals to be removed, designated by the required columns `start_timecode` and `end_timecode`. Any other columns are safely ignored.
 Example:
