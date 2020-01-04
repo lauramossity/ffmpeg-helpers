@@ -16,11 +16,29 @@ This repository contains documentation of my process for capturing and convertin
 
 ### Optional but also useful
 
-* Mediainfo
-* VLC
+* Mediainfo: https://en.wikipedia.org/wiki/MediaInfo
+    * see encoding, framerate, other metadata on a video
+* VLC: https://www.videolan.org/vlc/
+    * good for previewing video using variable rate playback, testing A/V sync corrections
 ---
 ## Lossless Capture using VirtualDub
+Enter capture mode:
+
+![Enter capture mode](./img/01-capture-mode.png "Enter capture mode")
+
+Select the capture device:
+
+![Select capture device](./img/02-capture-device.png "Select capture device")
+
+Configure video capture filter:
+
+![Video > Capture Filter](./img/03a-video-capture-filter.png "Video > Capture Filter")
+![Video > Capture Filter > Video Decoder](./img/03b-video-decoder.png "Video > Capture Filter > Video Decoder")
+![Video > Capture Filter > Video Proc Amp](./img/03c-video-proc-amp.png "Video > Capture Filter > Video Proc Amp")
+![Video > Capture Filter > Video Image](./img/03d-video-image.png "Video > Capture Filter > Video Image")
+
 TODO
+
 ### Fixing audio sync problems
 TODO
 
