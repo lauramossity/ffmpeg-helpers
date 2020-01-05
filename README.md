@@ -22,25 +22,106 @@ This repository contains documentation of my process for capturing and convertin
     * good for previewing video using variable rate playback, testing A/V sync corrections
 ---
 ## Lossless Capture using VirtualDub
-Enter capture mode:
+Enter capture mode
+<details>
+    <summary>File > Capture AVI</summary>
 
-![Enter capture mode](./img/01-capture-mode.png "Enter capture mode")
+![File > Capture AVI](./img/01-capture-mode.png "File > Capture AVI")
+</details>
 
 Select the capture device:
+<details>
+    <summary>Device > Device Name</summary>
 
-![Select capture device](./img/02-capture-device.png "Select capture device")
+![Device > Device Name](./img/02-capture-device.png "Device > Device Name")
+</details>
 
-Configure video capture filter:
-
+Video capture filter can be left on the defaults. Use NTSC_M standard and ensure no image masking.
+<details>
+    <summary>Video > Capture Filter</summary>
+    
 ![Video > Capture Filter](./img/03a-video-capture-filter.png "Video > Capture Filter")
+
 ![Video > Capture Filter > Video Decoder](./img/03b-video-decoder.png "Video > Capture Filter > Video Decoder")
 ![Video > Capture Filter > Video Proc Amp](./img/03c-video-proc-amp.png "Video > Capture Filter > Video Proc Amp")
 ![Video > Capture Filter > Video Image](./img/03d-video-image.png "Video > Capture Filter > Video Image")
+</details>
 
-TODO
+Audio capture filter should also be left on defaults:
+<details>
+    <summary>Audio > Capture filter</summary>
+
+![Audio > Capture Filter](./img/04a-audio-capture-filter.png "Audio > Capture Filter")
+
+![Audio > Capture Filter > AudioInputMixer Properties](./img/04b-audio-capture-filter-menu.png "Audio > Capture Filter > AudioInputMixer Properties")
+</details>
+
+"Capture pin" has settings for the input format of the video capture:
+<details>
+    <summary>Video > Capture pin</summary>
+
+![Video > Capture pin](./img/05a-capture-pin.png "Video > Capture pin")
+
+![Video > Capture pin > Stream Format](./img/05b-capture-pin-menu.png "Video > Capture pin > Stream Format")
+</details>
+
+"Crossbar" has capture device settings to determine whether to capture on component video vs. S-Video, etc.
+<details>
+    <summary>Video > Crossbar</summary>
+
+![Video > Crossbar](./img/06a-crossbar.png "Video > Crossbar")
+
+![Video > Crossbar > Crossbar](./img/06b-crossbar-window.png "Video > Crossbar > Crossbar -- SVideo and Video Decoder Out selected")
+</details>
+
+Video compression settings should use Lagarith Lossless Codec, and not require pixel conversion.
+<details>
+    <summary>Video > Compression</summary>
+
+![Video > Compression](./img/07a-compression.png "Video > Compression")
+
+![Video > Compression window](./img/07b-video-compression-window.png "Video > Compression window")
+![Video > Compression > Pixel format](./img/07c-pixel-format.png "Video > Compression > Pixel format")
+![Video > Compression > Configure](./img/07d-pixel-format-configure.png "Video > Compression > Configure")
+</details>
+
+Audio compression settings should use no compression.
+<details>
+    <summary>Audio > Compression</summary>
+
+![Audio > Compression](./img/08a-audio-compression.png "Audio > Compression")
+
+![Audio > Compression window](./img/08b-audio-compression-window.png "Audio > Compression window")
+</details>
+
+Capture as full quality mono. (Ensure only the left audio channel is plugged in, as well- there is just noise on the right channel)
+<details>
+    <summary>Audio > Raw capture format</summary>
+
+![Audio > Raw capture format](./img/09a-audio-capture-format.png "Audio > Raw capture format")
+
+![Audio > Raw capture format window](./img/09b-raw-audio-format-window.png "Audio > Raw capture format window")
+</details>
+
+Start video capture and start playing the tape simultaneously. Be sure to also set a save file.
+<details>
+    <summary>Capture > Capture video (F5, F6)</summary>
+
+![Capture > Capture video](./img/10-capture-video.png "Capture > Capture video")
+</details>
 
 ### Fixing audio sync problems
-TODO
+For some of the video sources, there appears to be an audio delay of 350ms.
+
+https://wjwoodrow.wordpress.com/2013/02/04/correcting-for-audiovideo-sync-issues-with-the-ffmpeg-programs-itsoffset-switch/
+
+Follow the steps for "Case 2: Video happens before audio":
+>The “itsoffset” in the above example is placed before file 1. When the mapping happens, it says "Take the audio of file 0 and the video of file 1, leave the audio of file 0 alone and apply the offset to the video of file 1 and merge them into a new output file".
+
+```
+ffmpeg -i ..\raw\source-video.avi -itsoffset 0.350 -i ..\raw\source-video.avi -vcodec copy -acodec copy -map 0:1 -map 1:0 ..\raw\source-video-sync-corrected.avi
+```
+The above command delays the audio 0.350 seconds.
 
 ---
 ## Processing and Compression using ffmpeg
