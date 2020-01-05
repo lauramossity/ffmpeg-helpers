@@ -110,6 +110,17 @@ Start video capture and start playing the tape simultaneously. Be sure to also s
 ![Capture > Capture video](./img/10-capture-video.png "Capture > Capture video")
 </details>
 
+### Trim blank sections at beginning and end of captured video
+After capturing, you'll want to trim off any blank sections at the beginning and end of the captured video.
+
+In VirtualDub, open the file.
+
+Select start and end of content by moving the slider and using Edit > Set Selection Start / End
+
+Use View > Audio Display to help ensure that you're not trimming off audio content
+
+File > Export > Stream Copy
+
 ### Fixing audio sync problems
 For some of the video sources, there appears to be an audio delay of 350ms.
 
