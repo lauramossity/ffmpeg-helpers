@@ -110,6 +110,53 @@ Start video capture and start playing the tape simultaneously. Be sure to also s
 ![Capture > Capture video](./img/10-capture-video.png "Capture > Capture video")
 </details>
 
+The output of this process is an AVI container containing Lagarith-encoded interlaced video and PCM (uncompressed) audio:
+```
+General
+Format                           : AVI
+Format/Info                      : Audio Video Interleave
+Format_Profile                   : OpenDML
+FileSize/String                  : 56.2 GiB
+Duration/String                  : 2 h 4 min
+OverallBitRate/String            : 64.9 Mb/s
+Encoded_Application/String       : Lavf57.78.100
+
+Video
+ID/String                        : 0
+Format                           : Lagarith
+CodecID                          : LAGS
+Duration/String                  : 2 h 4 min
+BitRate/String                   : 63.3 Mb/s
+Width/String                     : 640 pixels
+Height/String                    : 480 pixels
+DisplayAspectRatio/String        : 4:3
+FrameRate/String                 : 29.970 (30000/1001) FPS
+ColorSpace                       : YUV
+ChromaSubsampling/String         : 4:2:2
+BitDepth/String                  : 8 bits
+Bits-(Pixel*Frame)               : 6.879
+StreamSize/String                : 54.9 GiB (98%)
+
+Audio
+ID/String                        : 1
+Format                           : PCM
+Format_Settings                  : Little / Signed
+CodecID                          : 00000001-0000-0010-8000-00AA00389B71
+Duration/String                  : 2 h 4 min
+BitRate_Mode/String              : Constant
+BitRate/String                   : 1 536 kb/s
+Channel(s)/String                : 1 channel
+SamplingRate/String              : 96.0 kHz
+BitDepth/String                  : 16 bits
+StreamSize/String                : 1.33 GiB (2%)
+Alignment/String                 : Aligned on interleaves
+Interleave_Duration/String       : 8  ms (0.25 video frame)
+Interleave_Preload/String        : 21  ms
+```
+
+The typical file size is 30GB per hour of footage.
+
+
 ### Trim blank sections at beginning and end of captured video
 After capturing, you'll want to trim off any blank sections at the beginning and end of the captured video.
 
